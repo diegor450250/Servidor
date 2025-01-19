@@ -12,5 +12,5 @@ app.use('/api/carts', cartRouter);
 app.use('/api/products', productsRouter);
 
 const server = app.listen(8080, () => {
-    Console.log("Escuchando en el puerto 8080")
+    console.log("Escuchando en el puerto 8080")
 });

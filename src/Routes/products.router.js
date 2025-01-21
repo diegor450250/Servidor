@@ -90,12 +90,13 @@ router.post('/', (req, res) => {
 });
 
 router.delete('/:id', (req, res) => {
-    let id = req.params.id;
-    productoIndex = products.findIndex(pds => pds.id === id )
+    let id = parseInt(req.params.id);
+    let productoIndex = products.findIndex(p => p.id === id )
     if (productoIndex === -1){
         return res.status(400).send({status : 'error', error : 'Producto no encontrado'});
     }
     products.splice(productoIndex, 1);
     res.send({status : 'Completado', message : 'Producto eliminado'})
 });
+
 export default router;

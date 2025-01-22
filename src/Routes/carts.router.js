@@ -1,5 +1,8 @@
 import {Router} from 'express';
+import CartManager from '../FileManager/cartManager.js';
+
 const router = Router();
+const cartManager = new CartManager();
 
 let carts = [
     {
@@ -18,33 +21,20 @@ let carts = [
 ]
 
 router.post("/", (req, resp) => {
-    let nuevo = {};
-    nuevo.id = carts.length + 1;
-    nuevo.products = [];
-    carts.push(nuevo);
+    cartManager.crearCarrito();
     resp.send({status: "Completado", message : "Creado con exito"});
 })
 
 router.post("/:cid/products/:pid", (req, resp) => {
-    let index = carts.findIndex(a => a.id === parseInt(req.params.cid));
-    if (index === -1)
-    {
-        return resp.status(404).send({status : "error", error : "carrito no encontrado"});
-    }
-    let IndexProducto = carts[index].products.findIndex(a => a.productId === parseInt(req.params.pid))
-    if (IndexProducto === -1){
-        let nuevo = {};
-        nuevo.productId = parseInt(req.params.pid);
-        nuevo.cantidad = 1;
-        carts[index].products.push(nuevo);
-    }else {
-        carts[index].products[IndexProducto].cantidad += 1;
-    }
+    const idC = req.params.cid;
+    const idP = req.params.pid;
+    cartManager.agregarProducto(idP, idC);
     resp.send({status : "Agregado", message : "Agregado con exito"})
 })
 
 router.get("/:cid", (req, resp) => {
-    const cartBuscado = carts.find(a => a.id === parseInt(req.params.cid));
+    const carritos = cartManager.leerCarritos();
+    const cartBuscado = carritos.find(a => a.id === parseInt(req.params.cid));
     if (!cartBuscado)
     {
         return resp.status(404).send({status : "error", error : "carrito no encontrado"});

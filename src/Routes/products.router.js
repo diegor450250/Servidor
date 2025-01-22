@@ -1,6 +1,8 @@
-import { error } from 'console';
 import {Router} from 'express';
+import ProductManager from '../FileManager/productsManager.js';
+
 const router = Router();
+const productManager = new ProductManager();
 
 let products = [
     {
@@ -67,10 +69,12 @@ let products = [
 ]
 
 router.get('/', (req, res) => {
+    let products = productManager.leerProductos();
     res.send({products});
 });
 
 router.get('/:id', (req, res) => {
+    let products = productManager.leerProductos();
     const idBuscado = parseInt(req.params.id);
     const producto = products.find(pds => pds.id === idBuscado);
     if (!producto){
@@ -84,18 +88,13 @@ router.post('/', (req, res) => {
     if (!nuevo.precio || !nuevo.nombre || !nuevo.description || !nuevo.codigo || !nuevo.stock || !nuevo.categoria || !nuevo.status || nuevo.imagenes.length() === 0 ) {
         return res.status(400).send({status : 'error', error : 'Datos incompletos'})
     }
-    nuevo.id = products.length() + 1;
-    products.push(nuevo);
+    productManager.agregarProducto(nuevo);
     res.send({status : 'Completado', message : 'Agregado correctamente'})
 });
 
 router.delete('/:id', (req, res) => {
-    let id = parseInt(req.params.id);
-    let productoIndex = products.findIndex(p => p.id === id )
-    if (productoIndex === -1){
-        return res.status(400).send({status : 'error', error : 'Producto no encontrado'});
-    }
-    products.splice(productoIndex, 1);
+    const idP = req.params.id;
+    productManager.borrarProducto(idP);
     res.send({status : 'Completado', message : 'Producto eliminado'})
 });
 
